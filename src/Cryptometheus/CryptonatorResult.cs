@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using SethCS.Exceptions;
+using SethCS.Extensions;
 
 namespace Cryptometheus
 {
@@ -18,6 +20,7 @@ namespace Cryptometheus
 
         public CryptonatorResult()
         {
+            this.Price = -1;
         }
 
         // ---------------- Properties ----------------
@@ -49,6 +52,20 @@ namespace Cryptometheus
         /// The error message.  Set to null if <see cref="Success"/> is true.
         /// </summary>
         public string Error { get; set; }
+
+        // ---------------- Functions ----------------
+
+        public override string ToString()
+        {
+            if( this.Success == false )
+            {
+                return $"{nameof( this.Error )}: {this.Error}";
+            }
+            else
+            {
+                return $"{this.BaseCurrency} -> {this.TargetCurrency}: {this.Price}";
+            }
+        }
     }
 
     public static class CryptonatorResultExtensions
@@ -76,8 +93,79 @@ namespace Cryptometheus
             //     "error":"Pair not found"
             // }
 
-            // JObject json = JObject.Parse( jsonString );
-            Console.WriteLine( jsonString );
+            JObject json = JObject.Parse( jsonString );
+
+            bool success;
+            JValue successToken = (JValue)json["success"];
+            if( bool.TryParse( successToken.Value.ToString(), out success ) == false )
+            {
+                throw new ApplicationException(
+                    "Could not parse 'success' from response: " + jsonString
+                );
+            }
+
+            result.Success = success;
+            if( result.Success == false )
+            {
+                JValue errorToken = (JValue)json["error"];
+                result.Error = errorToken.Value.ToString();
+            }
+            else
+            {
+                JObject tickerObject = (JObject)json["ticker"];
+                foreach( JProperty property in tickerObject.Properties() )
+                {
+                    if( "base".EqualsIgnoreCase( property.Name ) )
+                    {
+                        result.BaseCurrency = property.Value.ToString();
+                    }
+                    else if( "target".EqualsIgnoreCase( property.Name ) )
+                    {
+                        result.TargetCurrency = property.Value.ToString();
+                    }
+                    else if( "price".EqualsIgnoreCase( property.Name ) )
+                    {
+                        if( decimal.TryParse( property.Value.ToString(), out decimal price ) )
+                        {
+                            result.Price = price;
+                        }
+                        else
+                        {
+                            throw new ApplicationException(
+                                "Could not parse 'price' from response: " + jsonString
+                            );
+                        }
+                    }
+                }
+
+                IList<string> errors = result.Validate();
+                if( errors.IsEmpty() == false )
+                {
+                    throw new ListedValidationException(
+                        $"Errors when parsing response: {jsonString}",
+                        errors
+                    );
+                }
+            }
+        }
+
+        public static IList<string> Validate( this CryptonatorResult result )
+        {
+            List<string> errors = new List<string>();
+            if( string.IsNullOrWhiteSpace( result.BaseCurrency ) )
+            {
+                errors.Add( $"{nameof( result.BaseCurrency )} null, empty, or whitespace" );
+            }
+            else if( string.IsNullOrWhiteSpace( result.TargetCurrency ) )
+            {
+                errors.Add( $"{nameof( result.TargetCurrency )} null, empty, or whitespace" );
+            }
+            else if( result.Price < 0 )
+            {
+                errors.Add( $"{nameof( result.Price )} negative" );
+            }
+
+            return errors;
         }
     }
 }

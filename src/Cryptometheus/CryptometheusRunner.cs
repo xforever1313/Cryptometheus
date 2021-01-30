@@ -63,13 +63,14 @@ namespace Cryptometheus
             this.client.Dispose();
         }
 
-        private void ApiReader_OnSuccessfulRead( CryptonatorResult obj )
+        private void ApiReader_OnSuccessfulRead( CryptonatorResult result )
         {
+            Console.WriteLine( result );
         }
 
-        private void ApiReader_OnError( Exception obj )
+        private void ApiReader_OnError( Exception e )
         {
-            Console.Error.WriteLine( obj.Message );
+            Console.Error.WriteLine( e.Message );
         }
     }
 }
