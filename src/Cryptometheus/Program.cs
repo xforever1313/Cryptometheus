@@ -43,6 +43,11 @@ namespace Cryptometheus
                 }
                 else
                 {
+                    using( CryptometheusRunner runner = new CryptometheusRunner( settings ) )
+                    {
+                        runner.Start();
+                        runner.Wait();
+                    }
                 }
             }
             catch( OptionException e )

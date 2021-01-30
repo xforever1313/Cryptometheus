@@ -53,7 +53,7 @@ namespace Cryptometheus
 
     public static class CryptonatorResultExtensions
     {
-        public static void FromJson( this CryptonatorResult result, JObject json )
+        public static void FromJson( this CryptonatorResult result, string jsonString )
         {
             // Example success JSON:
             // {
@@ -75,6 +75,9 @@ namespace Cryptometheus
             //     "success":false,
             //     "error":"Pair not found"
             // }
+
+            // JObject json = JObject.Parse( jsonString );
+            Console.WriteLine( jsonString );
         }
     }
 }
