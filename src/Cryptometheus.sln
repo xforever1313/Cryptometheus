@@ -7,8 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptometheus", "Cryptometh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibSethCS", "..\SethCS\LibSethCS\LibSethCS.csproj", "{DDDBC837-C182-470C-9E91-A87F5D5B50AE}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SethCS", "..\SethCS\SethCS\SethCS.shproj", "{52089274-B9A2-4A47-A221-C321DEE1CE7F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SethCS\SethCS\SethCS.projitems*{52089274-b9a2-4a47-a221-c321dee1ce7f}*SharedItemsImports = 13
 		..\SethCS\SethCS\SethCS.projitems*{dddbc837-c182-470c-9e91-a87f5d5b50ae}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
