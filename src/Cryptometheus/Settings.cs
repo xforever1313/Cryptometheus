@@ -81,7 +81,7 @@ namespace Cryptometheus
         private const string tickerHelpMsg = "What tickers to watch for.  Should be in the form of base-target, separated by ';'.  For example, btc-usd;doge-usd;algo-usd";
 
         internal const string RatelimitArg = "rate_limit";
-        private const string rateLimitHelpMsg = "Delay between querying the API";
+        private const string rateLimitHelpMsg = "Delay between each API query in seconds.  Can not be 0 or less.";
 
         // ---------------- Functions ----------------
 
