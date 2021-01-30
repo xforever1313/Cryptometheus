@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Mono.Options;
 using SethCS.Exceptions;
 
@@ -46,7 +48,7 @@ namespace Cryptometheus
                     using( CryptometheusRunner runner = new CryptometheusRunner( settings ) )
                     {
                         runner.Start();
-                        runner.Wait();
+                        CreateHostBuilder( args ).Build().Run();
                     }
                 }
             }
@@ -117,5 +119,12 @@ namespace Cryptometheus
                 }
             }
         }
+
+        public static IHostBuilder CreateHostBuilder( string[] args ) =>
+            Host.CreateDefaultBuilder( args )
+                .ConfigureWebHostDefaults( webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                } );
     }
 }

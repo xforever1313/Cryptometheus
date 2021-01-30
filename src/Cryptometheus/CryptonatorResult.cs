@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json.Linq;
 using SethCS.Exceptions;
 using SethCS.Extensions;
@@ -38,10 +37,15 @@ namespace Cryptometheus
         public string TargetCurrency { get; set; }
 
         /// <summary>
+        /// The ticker that is used.
+        /// </summary>
+        public string Ticker => $"{this.BaseCurrency ?? string.Empty}-{this.TargetCurrency ?? string.Empty}";
+
+        /// <summary>
         /// How much 1 <see cref="BaseCurrency"/> can be sold for in <see cref="TargetCurrency"/>
         /// Set to 0 if <see cref="Success"/> is false.
         /// </summary>
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         /// <summary>
         /// Was the query successful?
@@ -59,11 +63,11 @@ namespace Cryptometheus
         {
             if( this.Success == false )
             {
-                return $"{nameof( this.Error )}: {this.Error}";
+                return $"{nameof( this.Error )}: {this.Error ?? string.Empty}";
             }
             else
             {
-                return $"{this.BaseCurrency} -> {this.TargetCurrency}: {this.Price}";
+                return $"{this.Ticker}: {this.Price}";
             }
         }
     }
@@ -125,7 +129,7 @@ namespace Cryptometheus
                     }
                     else if( "price".EqualsIgnoreCase( property.Name ) )
                     {
-                        if( decimal.TryParse( property.Value.ToString(), out decimal price ) )
+                        if( double.TryParse( property.Value.ToString(), out double price ) )
                         {
                             result.Price = price;
                         }

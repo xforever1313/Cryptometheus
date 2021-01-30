@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Options;
 using SethCS.Exceptions;
 using SethCS.Extensions;
@@ -197,7 +198,8 @@ namespace Cryptometheus
 
         private static IEnumerable<string> SplitTickers( string arg )
         {
-            return arg.Split( ';', StringSplitOptions.RemoveEmptyEntries );
+            return arg.Split( ';', StringSplitOptions.RemoveEmptyEntries )
+                .Select( s => s.ToUpper() ); // Cryptonator is all uppercase.  Let's do the same.
         }
 
         private static TimeSpan ParseRateLimit( string arg, string context )

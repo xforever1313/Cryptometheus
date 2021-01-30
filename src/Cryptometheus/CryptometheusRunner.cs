@@ -6,7 +6,9 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using Prometheus;
 
 namespace Cryptometheus
 {
@@ -21,6 +23,9 @@ namespace Cryptometheus
         private readonly ApiReader apiReader;
         private bool started;
 
+        private readonly Dictionary<string, IGauge> gagues;
+        private readonly ICounter exceptionCount;
+
         // ---------------- Constructor ----------------
 
         public CryptometheusRunner( Settings settings )
@@ -32,6 +37,26 @@ namespace Cryptometheus
             this.apiReader = new ApiReader( this.client, this.settings );
             this.apiReader.OnSuccessfulRead += this.ApiReader_OnSuccessfulRead;
             this.apiReader.OnError += this.ApiReader_OnError;
+
+            this.gagues = new Dictionary<string, IGauge>();
+            foreach( string ticker in settings.Tickers )
+            {
+                GaugeConfiguration config = new GaugeConfiguration
+                {
+                    SuppressInitialValue = true
+                };
+
+                this.gagues[ticker] = Metrics.CreateGauge(
+                    ticker.Replace( '-', '_' ),
+                    $"Price of {ticker}",
+                    config
+                );
+            }
+
+            this.exceptionCount = Metrics.CreateCounter(
+                "error_count",
+                $"How many exceptions has {nameof( Cryptometheus )} reported since the process started?"
+            );
 
             this.started = false;
         }
@@ -49,12 +74,6 @@ namespace Cryptometheus
             this.started = true;
         }
 
-        public void Wait()
-        {
-            Console.WriteLine( "Press a key to continue" );
-            Console.ReadKey();
-        }
-
         public void Dispose()
         {
             this.apiReader.OnSuccessfulRead -= this.ApiReader_OnSuccessfulRead;
@@ -65,12 +84,19 @@ namespace Cryptometheus
 
         private void ApiReader_OnSuccessfulRead( CryptonatorResult result )
         {
-            Console.WriteLine( result );
+            string key = result.Ticker;
+            if( this.gagues.ContainsKey( key ) == false )
+            {
+                throw new KeyNotFoundException( $"Can not find ticker '{key}; in gagues" );
+            }
+
+            this.gagues[key].Set( result.Price );
         }
 
         private void ApiReader_OnError( Exception e )
         {
             Console.Error.WriteLine( e.Message );
+            this.exceptionCount.Inc();
         }
     }
 }
