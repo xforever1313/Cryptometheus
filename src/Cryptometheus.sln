@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptometheus", "Cryptometheus\Cryptometheus.csproj", "{265C60A7-2D51-463C-A80A-FDF439CCCC75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptometheus", "Cryptometheus\Cryptometheus.csproj", "{265C60A7-2D51-463C-A80A-FDF439CCCC75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibSethCS", "..\SethCS\LibSethCS\LibSethCS.csproj", "{DDDBC837-C182-470C-9E91-A87F5D5B50AE}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SethCS\SethCS\SethCS.projitems*{dddbc837-c182-470c-9e91-a87f5d5b50ae}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -15,6 +20,10 @@ Global
 		{265C60A7-2D51-463C-A80A-FDF439CCCC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{265C60A7-2D51-463C-A80A-FDF439CCCC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{265C60A7-2D51-463C-A80A-FDF439CCCC75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDDBC837-C182-470C-9E91-A87F5D5B50AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDBC837-C182-470C-9E91-A87F5D5B50AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDBC837-C182-470C-9E91-A87F5D5B50AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDBC837-C182-470C-9E91-A87F5D5B50AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
