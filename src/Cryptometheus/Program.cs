@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.IO;
 using Mono.Options;
 using SethCS.Exceptions;
 
@@ -24,14 +25,21 @@ namespace Cryptometheus
                 {
                     PrintHelp();
                 }
+                else if( settings.PrintVersion )
+                {
+                    PrintVersion();
+                }
                 else if( settings.PrintDisclaimer )
                 {
+                    PrintDisclaimer();
                 }
                 else if( settings.PrintCredits )
                 {
+                    PrintCredits();
                 }
                 else if( settings.PrintLicense )
                 {
+                    PrintLicense();
                 }
                 else
                 {
@@ -72,6 +80,37 @@ namespace Cryptometheus
             Console.WriteLine( $"(Note, command line arguments take precedence)." );
             Console.WriteLine();
             Console.WriteLine( "Have an issue? Need more help? File an issue: https://github.com/xforever1313/Cryptometheus" );
+        }
+
+        private static void PrintVersion()
+        {
+            Console.WriteLine( typeof( Program ).Assembly.GetName().Version.ToString( 3 ) );
+        }
+
+        private static void PrintDisclaimer()
+        {
+            Console.WriteLine( ReadResource( "Cryptometheus.Disclaimer.md" ) );
+        }
+
+        private static void PrintCredits()
+        {
+            Console.WriteLine( ReadResource( "Cryptometheus.Credits.md" ) );
+        }
+
+        private static void PrintLicense()
+        {
+            Console.WriteLine( ReadResource( "Cryptometheus.LICENSE_1_0.txt" ) );
+        }
+
+        private static string ReadResource( string resourceName )
+        {
+            using( Stream stream = typeof( Program ).Assembly.GetManifestResourceStream( resourceName ) )
+            {
+                using( StreamReader reader = new StreamReader( stream ) )
+                {
+                    return reader.ReadToEnd();
+                }
+            }
         }
     }
 }

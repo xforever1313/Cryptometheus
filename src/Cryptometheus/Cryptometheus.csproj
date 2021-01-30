@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\LICENSE_1_0.txt" Link="LICENSE_1_0.txt" />
+    <EmbeddedResource Include="..\..\Credits.md" Link="Credits.md"/>
+    <EmbeddedResource Include="..\..\Disclaimer.md" Link="Disclaimer.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mono.Options" Version="6.6.0.161" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="prometheus-net" Version="4.1.1" />
