@@ -21,25 +21,6 @@ pipeline
             }
             stages
             {
-                stage( 'checkout' )
-                {
-                    steps
-                    {
-                        checkout poll: false, scm: [
-                            $class: 'GitSCM', 
-                            branches: [[name: '*/main']],
-                            doGenerateSubmoduleConfigurations: false,
-                            extensions: [
-                                [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: true, recursiveSubmodules: true, reference: '', trackingSubmodules: false],
-                                [$class: 'CleanBeforeCheckout'],
-                                [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Cryptometheus'],
-                                [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]
-                            ],
-                            submoduleCfg: [],
-                            userRemoteConfigs: [[url: 'https://github.com/xforever1313/Cryptometheus.git']]
-                        ]
-                    }
-                }
                 stage( 'setup' )
                 {
                     steps
@@ -88,25 +69,6 @@ pipeline
             }
             stages
             {
-                stage( 'checkout' )
-                {
-                    steps
-                    {
-                        checkout poll: false, scm: [
-                            $class: 'GitSCM', 
-                            branches: [[name: '*/main']],
-                            doGenerateSubmoduleConfigurations: false,
-                            extensions: [
-                                [$class: 'CleanBeforeCheckout'],
-                                [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Cryptometheus'],
-                                [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true],
-                                [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false]
-                            ],
-                            submoduleCfg: [],
-                            userRemoteConfigs: [[url: 'https://github.com/xforever1313/Cryptometheus.git']]
-                        ]
-                    }
-                }
                 stage( 'setup' )
                 {
                     steps
