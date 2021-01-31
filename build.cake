@@ -92,7 +92,7 @@ Task( dockerLinuxX64Target )
 .Does(
     () =>
     {
-        BuildDocker( linuxX64DistDir, "linux_amd64" );
+        BuildDocker( linuxX64DistDir );
     }
 ).Description( "Builds the Linux x64 docker image" );
 
@@ -100,24 +100,28 @@ Task( dockerLinuxArmTarget )
 .Does(
     () =>
     {
-        BuildDocker( linuxArmDistDir, "linux_arm32" );
+        BuildDocker( linuxArmDistDir );
     }
 ).Description( "Builds the Linux arm docker image" );
 
-void BuildDocker( DirectoryPath distDir, string tag )
+void BuildDocker( DirectoryPath distDir )
 {
-    string arguments = $"build -t xforever1313/cryptometheus:{tag} -f docker/linux.dockerfile {distDir}";
-    ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
-    ProcessSettings settings = new ProcessSettings
+    List<string> tags = new List<string> { "latest", version };
+    foreach( string tag in tags )
     {
-        Arguments = argumentsBuilder
-    };
-    int exitCode = StartProcess( "docker", settings );
-    if( exitCode != 0 )
-    {
-        throw new ApplicationException(
-            "Error when running docker to build.  Got error: " + exitCode
-        );
+        string arguments = $"build -t xforever1313/cryptometheus:{tag} -f docker/linux.dockerfile {distDir}";
+        ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+        ProcessSettings settings = new ProcessSettings
+        {
+            Arguments = argumentsBuilder
+        };
+        int exitCode = StartProcess( "docker", settings );
+        if( exitCode != 0 )
+        {
+            throw new ApplicationException(
+                "Error when running docker to build.  Got error: " + exitCode
+            );
+        }
     }
 }
 
