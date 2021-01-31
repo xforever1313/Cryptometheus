@@ -55,6 +55,7 @@ OpenCover/
 .vs
 
 DistPackages/
+dist/
 
 /ReleaseNotes.md
 
