@@ -28,7 +28,7 @@ pipeline
                         checkout poll: false, scm: [
                             $class: 'GitSCM', 
                             branches: [[name: '*/main']],
-                            doGenerateSubmoduleConfigurations: false,
+                            doGenerateSubmoduleConfigurations: true,
                             extensions: [
                                 [$class: 'CleanBeforeCheckout'],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Cryptometheus'],
