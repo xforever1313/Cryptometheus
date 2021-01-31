@@ -109,7 +109,7 @@ void BuildDocker( DirectoryPath distDir )
     List<string> tags = new List<string> { "latest", version };
     foreach( string tag in tags )
     {
-        string arguments = $"build -t cryptometheus:{tag} -f docker/linux.dockerfile {distDir}";
+        string arguments = $"build -t xforever1313/cryptometheus:{tag} -f docker/linux.dockerfile {distDir}";
         ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
         ProcessSettings settings = new ProcessSettings
         {
