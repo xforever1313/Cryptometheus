@@ -73,7 +73,7 @@ pipeline
                 {
                     steps
                     {
-                        sh "dotnet tool update Cake.Tool --tool-path ./Cake";
+                        sh "~/.dotnet/dotnet tool update Cake.Tool --tool-path ./Cake";
                     }
                 }
                 stage( "build_docker_arm32" )
