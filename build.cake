@@ -14,7 +14,7 @@ const string linuxArmRid = "linux-arm";
 
 // This is the version of this software,
 // update before making a new release.
-const string version = "1.0.0";
+const string version = "0.0.1";
 
 DotNetCoreMSBuildSettings msBuildSettings = new DotNetCoreMSBuildSettings();
 // Sets the assembly version.
