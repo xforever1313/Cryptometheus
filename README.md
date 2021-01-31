@@ -38,4 +38,40 @@ Cryptonator only updates prices every 30 seconds.  So, if you are only querying 
 
 When Cryptometheus is running, it will serve metrics on ```http://localhost:port/metrics```. All other URLs result in a blank page.  You will have to have your prometheus configuration point to this URL.
 
+In your prometheus.yml file, you only need to add the URL of the PC or container running Cryptometheus.
+```yml
+scrape_configs:
+  - job_name: cryptometheus
+    
+    static_configs:
+        - targets: ['hostname:port']
+```
+
 On Prometheus, the prices of tickers are guages, whose name is the same values passed into the ```tickers``` command line argument or environment variable, but '-' is replaced with '_' since Prometheus does not support '-'.  They are also in all caps.
+
+# Docker Configuration
+
+There is no persistent configuration that needs to be saved with Cryptometheus, as everything is passed in via environment variables or command line.  So there is no need to create a volumne for it.
+
+However, if running on the same computer as Prometheus, you need to make sure they are on the same network.  If you do not have a network, create one with
+
+```sh
+docker network create yournetwork
+```
+
+And then start Cryptometheus with
+
+```sh
+docker run \
+    -e tickers="btc-usd;doge-usd;algo-usd;xlm-usd;" \
+    -e rate_limit=10 \
+    --name=yourname \
+    -d \
+    -p yourhostport:containerport \
+    --network=yournetwork \
+    --restart always \
+    xforever1313/Cryptometheus \
+    --urls=http://*:containerport
+```
+
+In your prometheus.yml file, you can then scrape Cryptometheus with the url http://yourname:yourPort. Note, cryptometheus does not run as root, so you need to set the port you want to listen to by adding ```--urls=http://*:containerport``` at the end of your docker run command, and pick a port.
