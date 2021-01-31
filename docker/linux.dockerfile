@@ -9,6 +9,7 @@ RUN chown -R containeruser:containeruser /cryptometheus
 USER containeruser
 RUN mkdir /cryptometheus/bin/
 COPY ./ /cryptometheus/bin
+RUN chmod 700 /cryptometheus/bin/Cryptometheus
 
 # Sanity Check
 RUN ["/cryptometheus/bin/Cryptometheus", "--version"]
