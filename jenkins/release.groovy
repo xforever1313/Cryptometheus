@@ -16,7 +16,7 @@ pipeline
     agent none
     parameters
     {
-        booleanParam( name: "Deploy", defaultValue: true, description "Should we deploy as well?" );
+        booleanParam( name: "Deploy", defaultValue: true, description: "Should we deploy as well?" );
     }
     stages
     {
