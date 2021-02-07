@@ -309,7 +309,8 @@ class DockerLogin : IDisposable
         {
             process.StartInfo = info;
             process.Start();
-            process.StandardInput.WriteLine( password );
+            process.StandardInput.Write( password );
+            process.StandardInput.Close();
             process.WaitForExit();
 
             int exitCode = process.ExitCode;
