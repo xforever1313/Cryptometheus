@@ -286,6 +286,7 @@ class DockerLogin : IDisposable
 
         if( this.config.ShouldLogin() == false )
         {
+            this.context.Information( "Skipping Login" );
             return;
         }
 
@@ -317,11 +318,13 @@ class DockerLogin : IDisposable
                 );
             }
         }
+
+        this.context.Information( "Logged in!" );
     }
 
     public void Dispose()
     {
-        if( this.newDockerConfigPath != null )
+        if( this.oldDockerConfigPath != null )
         {
             System.Environment.SetEnvironmentVariable( dockerConfigVar, this.oldDockerConfigPath.ToString() );
         }
