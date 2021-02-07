@@ -1,3 +1,7 @@
+// ---------------- Addins ----------------
+
+#addin nuget:?package=Cake.ArgumentBinder&version=0.2.2
+
 // ---------------- Fields ----------------
 
 const string buildTarget = "build";
@@ -148,44 +152,46 @@ Task( "docker_manifest" )
 
 Task( "docker_push_linux" )
 .Does(
-    () =>
+    ( context ) =>
     {
-        PushDocker( linuxX64DockerArch );
+        PushDocker( linuxX64DockerArch, context );
     }
 ).Description( "Pushes the linux x64 image.  Requires a user to be logged in first." );
 
 Task( "docker_push_linux_arm" )
 .Does(
-    () =>
+    ( context ) =>
     {
-        PushDocker( linuxArmDockerArch );
+        PushDocker( linuxArmDockerArch, context );
     }
 ).Description( "Pushes the linux arm image.  Requires a user to be logged in first." );
 
 Task( "docker_push_manifest" )
 .Does(
-    () =>
+    ( context ) =>
     {
-        PushDocker( null );
+        using( DockerLogin login = new DockerLogin( context ) )
+        {
+            foreach( string tag in dockerTags )
+            {
+                string arguments = $"manifest push {dockerImageName}:{tag}";
+                ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+                RunDocker( arguments );
+            }
+        }
     }
 ).Description( "Pushes the manifest image.  Requires a user to be logged in first." );
 
-void PushDocker( string arch )
+void PushDocker( string arch, ICakeContext context )
 {
-    if( string.IsNullOrWhiteSpace( arch ) == false )
+    using( DockerLogin login = new DockerLogin( context ) )
     {
-        arch = $"-{arch}";
-    }
-    else
-    {
-        arch = string.Empty;
-    }
-
-    foreach( string tag in dockerTags )
-    {
-        string arguments = $"push {dockerImageName}:{tag}{arch}";
-        ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
-        RunDocker( arguments );
+        foreach( string tag in dockerTags )
+        {
+            string arguments = $"push {dockerImageName}:{tag}-{arch}";
+            ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+            RunDocker( arguments );
+        }
     }
 }
 
@@ -201,6 +207,129 @@ void RunDocker( ProcessArgumentBuilder argumentsBuilder )
         throw new ApplicationException(
             "Error when running docker.  Got exit code: " + exitCode
         );
+    }
+}
+
+class DockerLoginConfig
+{
+    // ---------------- Properties ----------------
+
+    [StringArgument(
+        "username_env_var",
+        Description = "Environment Variable that contains the username to login as.",
+        DefaultValue = ""
+    )]
+    public string UsernameEnvVar { get; set; }
+
+    [StringArgument(
+        "password_env_var",
+        Description = "Environment Variable that contains the password to login as.",
+        DefaultValue = ""
+    )]
+    public string PasswordEnvVar { get; set; }
+
+    [StringArgument(
+        "new_docker_config_path",
+        Description = "Where to put the new docker config path when loggin in.",
+        DefaultValue = ""
+    )]
+    public string NewDockerConfigPath { get; set; }
+
+    // ---------------- Functions ----------------
+
+    public bool ShouldLogin()
+    {
+        return
+            ( string.IsNullOrWhiteSpace( this.UsernameEnvVar ) == false ) &&
+            ( string.IsNullOrWhiteSpace( this.PasswordEnvVar ) == false );
+    }
+}
+
+class DockerLogin : IDisposable
+{
+    // ---------------- Fields ----------------
+
+    private const string dockerConfigVar = "DOCKER_CONFIG";
+
+    private readonly ICakeContext context;
+    private readonly DockerLoginConfig config;
+    private readonly FilePath newDockerConfigPath;
+    private string oldDockerConfigPath;
+
+    // ---------------- Constructor ----------------
+
+    public DockerLogin( ICakeContext context ) :
+        this( context, context.CreateFromArguments<DockerLoginConfig>() )
+    {
+    }
+
+    public DockerLogin( ICakeContext context, DockerLoginConfig config )
+    {
+        this.config = config;
+        this.context = context;
+
+        if( string.IsNullOrWhiteSpace( this.config.NewDockerConfigPath ) == false )
+        {
+            this.newDockerConfigPath = new FilePath( this.config.NewDockerConfigPath );
+        }
+    }
+
+    // ---------------- Functions ----------------
+
+    public void Login()
+    {
+        if( this.newDockerConfigPath != null )
+        {
+            this.oldDockerConfigPath = this.context.EnvironmentVariable<string>( dockerConfigVar, string.Empty );
+            System.Environment.SetEnvironmentVariable( dockerConfigVar, this.newDockerConfigPath.ToString() );
+        }
+
+        if( this.config.ShouldLogin() == false )
+        {
+            return;
+        }
+
+        string userName = this.context.EnvironmentVariable<string>( this.config.UsernameEnvVar, string.Empty );
+        string password = this.context.EnvironmentVariable<string>( this.config.PasswordEnvVar, string.Empty );
+
+        string arguments = $"login --username {userName} --passwordstdin";
+        System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo
+        {
+            Arguments = arguments,
+            CreateNoWindow = true,
+            FileName = "docker",
+            RedirectStandardInput = true,
+            UseShellExecute = false
+        };
+
+        using( System.Diagnostics.Process process = new System.Diagnostics.Process() )
+        {
+            process.StartInfo = info;
+            process.Start();
+            process.StandardInput.WriteLine( password );
+            process.WaitForExit();
+
+            int exitCode = process.ExitCode;
+            if( exitCode != 0 )
+            {
+                throw new ApplicationException(
+                    "Error when running docker.  Got exit code: " + exitCode
+                );
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if( this.newDockerConfigPath != null )
+        {
+            System.Environment.SetEnvironmentVariable( dockerConfigVar, this.oldDockerConfigPath.ToString() );
+        }
+
+        if( this.newDockerConfigPath != null && this.context.FileExists( this.newDockerConfigPath ) )
+        {
+            this.context.DeleteFile( this.newDockerConfigPath );
+        }
     }
 }
 

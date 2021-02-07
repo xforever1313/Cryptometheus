@@ -1,14 +1,33 @@
 // https://github.com/xforever1313/X13JenkinsLib
 @Library( "X13JenkinsLib" )_
 
-def CallCakeOnWindows( String cmd )
+def CallCake( String cmd )
 {
-    bat ".\\Cake\\dotnet-cake.exe .\\Cryptometheus\\build.cake ${cmd}"
+    if( isUnix() )
+    {
+        sh "./Cake/dotnet-cake ./Cryptometheus/build.cake ${cmd}";
+    }
+    else
+    {
+        bat ".\\Cake\\dotnet-cake.exe .\\Cryptometheus\\build.cake ${cmd}";
+    }
 }
 
-def CallCakeOnUnix( String cmd )
+def DoDockerPush( String cakeTarget )
 {
-    sh "./Cake/dotnet-cake ./Cryptometheus/build.cake ${cmd}"
+    withCredentials(
+        [usernamePassword(
+            credentialsId: "dockerhub",
+            usernameVariable: "X13_DOCKER_LOGIN_USERNAME",
+            passwordVariable: "X13_DOCKER_LOGIN_PASSWORD"
+        )]
+    )
+    {
+        String newConfigPath = pwd() + "/docker.config";
+        CallCake(
+            "--target=${cakeTarget} --username_env_var=X13_DOCKER_LOGIN_USERNAME --password_env_var=X13_DOCKER_LOGIN_PASSWORD --new_docker_config_path=\"${newConfigPath}\""
+        );
+    }
 }
 
 pipeline
@@ -46,21 +65,21 @@ pipeline
                         {
                             steps
                             {
-                                CallCakeOnWindows( "--target=build" );
+                                CallCake( "--target=build" );
                             }
                         }
                         stage( 'publish_linux_x64' )
                         {
                             steps
                             {
-                                CallCakeOnWindows( "--target=publish_linux" );
+                                CallCake( "--target=publish_linux" );
                             }
                         }
                         stage( 'publish_linux_arm' )
                         {
                             steps
                             {
-                                CallCakeOnWindows( "--target=publish_linux_arm" );
+                                CallCake( "--target=publish_linux_arm" );
                                 stash includes: "Cryptometheus\\dist\\linux-arm\\**\\*", name: "linux_arm_build";
                             }
                         }
@@ -68,7 +87,7 @@ pipeline
                         {
                             steps
                             {
-                                CallCakeOnWindows( "--target=docker_linux" );
+                                CallCake( "--target=docker_linux" );
                             }
                         }
                     }
@@ -93,7 +112,7 @@ pipeline
                             steps
                             {
                                 unstash "linux_arm_build";
-                                CallCakeOnUnix( "--target=docker_linux_arm" );
+                                CallCake( "--target=docker_linux_arm" );
                             }
                         }
                     }
@@ -123,8 +142,7 @@ pipeline
                         {
                             steps
                             {
-                                X13DockerLogin( credsId: "dockerhub" );
-                                CallCakeOnWindows( "--target=docker_push_linux" );
+                                DoDockerPush( "docker_push_linux" );
                             }
                         }
                     }
@@ -141,8 +159,7 @@ pipeline
                         {
                             steps
                             {
-                                X13DockerLogin( credsId: "dockerhub" );
-                                CallCakeOnUnix( "--target=docker_push_linux_arm" );
+                                DoDockerPush( "docker_push_linux_arm" );
                             }
                         }
                     }
@@ -159,15 +176,14 @@ pipeline
                         {
                             steps
                             {
-                                CallCakeOnUnix( "--target=docker_manifest" );
+                                CallCake( "--target=docker_manifest" );
                             }
                         }
                         stage( "deploy" )
                         {
                             steps
                             {
-                                X13DockerLogin( credsId: "dockerhub" );
-                                CallCakeOnUnix( "--target=docker_push_manifest" );
+                                DoDockerPush( "docker_push_manifest" );
                             }
                         }
                     }
