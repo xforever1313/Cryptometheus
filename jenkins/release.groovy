@@ -16,7 +16,8 @@ pipeline
     agent none
     parameters
     {
-        booleanParam( name: "Deploy", defaultValue: true, description: "Should we deploy as well?" );
+        booleanParam( name: "Build", defaultValue: false, description: "Should we build?" ); // Swap by to true next build.
+        booleanParam( name: "Deploy", defaultValue: true, description: "Should we deploy?" );
     }
     stages
     {
@@ -96,6 +97,13 @@ pipeline
                             }
                         }
                     }
+                }
+            }
+            when
+            {
+                expression
+                {
+                    return params.Build;
                 }
             }
         } // End Build
