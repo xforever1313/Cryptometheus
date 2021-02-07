@@ -282,9 +282,9 @@ class DockerLogin : IDisposable
     {
         if( this.newDockerConfigPath != null )
         {
-            this.context.Information( $"Setting {dockerConfigVar} to {this.newDockerConfigPath}" );
             this.oldDockerConfigPath = this.context.EnvironmentVariable<string>( dockerConfigVar, string.Empty );
             System.Environment.SetEnvironmentVariable( dockerConfigVar, this.newDockerConfigPath.ToString() );
+            this.context.Information( $"Set {dockerConfigVar} to {this.context.EnvironmentVariable<string>( dockerConfigVar, string.Empty )}" );
             this.context.EnsureDirectoryExists( this.newDockerConfigPath );
             this.context.CleanDirectory( this.newDockerConfigPath );
         }
