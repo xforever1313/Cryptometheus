@@ -16,7 +16,7 @@ pipeline
     agent none
     parameters
     {
-        booleanParam( name: "Build", defaultValue: false, description: "Should we build?" ); // Swap by to true next build.
+        booleanParam( name: "Build", defaultValue: true, description: "Should we build?" );
         booleanParam( name: "Deploy", defaultValue: true, description: "Should we deploy?" );
     }
     stages
