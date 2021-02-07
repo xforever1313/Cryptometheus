@@ -113,8 +113,11 @@ pipeline
                     {
                         stage( "Push" )
                         {
-                            X13DockerLogin( "dockerhub" );
-                            CallCakeOnWindows( "--target=docker_push_linux" );
+                            steps
+                            {
+                                X13DockerLogin( "dockerhub" );
+                                CallCakeOnWindows( "--target=docker_push_linux" );
+                            }
                         }
                     }
                 }
@@ -128,8 +131,11 @@ pipeline
                     {
                         stage( "Push" )
                         {
-                            X13DockerLogin( "dockerhub" );
-                            CallCakeOnUnix( "--target=docker_push_linux_arm" );
+                            steps
+                            {
+                                X13DockerLogin( "dockerhub" );
+                                CallCakeOnUnix( "--target=docker_push_linux_arm" );
+                            }
                         }
                     }
                 }
@@ -143,12 +149,18 @@ pipeline
                     {
                         stage( "Build" )
                         {
-                            CallCakeOnUnix( "--target=docker_manifest" );
+                            steps
+                            {
+                                CallCakeOnUnix( "--target=docker_manifest" );
+                            }
                         }
                         stage( "deploy" )
                         {
-                            X13DockerLogin( "dockerhub" );
-                            CallCakeOnUnix( "--target=docker_push_manifest" );
+                            steps
+                            {
+                                X13DockerLogin( "dockerhub" );
+                                CallCakeOnUnix( "--target=docker_push_manifest" );
+                            }
                         }
                     }
                 }
