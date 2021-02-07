@@ -172,6 +172,7 @@ Task( "docker_push_manifest" )
     {
         using( DockerLogin login = new DockerLogin( context ) )
         {
+            login.Login();
             foreach( string tag in dockerTags )
             {
                 string arguments = $"manifest push {dockerImageName}:{tag}";
@@ -186,6 +187,7 @@ void PushDocker( string arch, ICakeContext context )
 {
     using( DockerLogin login = new DockerLogin( context ) )
     {
+        login.Login();
         foreach( string tag in dockerTags )
         {
             string arguments = $"push {dockerImageName}:{tag}-{arch}";
