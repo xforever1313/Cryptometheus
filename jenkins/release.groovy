@@ -123,7 +123,7 @@ pipeline
                         {
                             steps
                             {
-                                X13DockerLogin( "dockerhub" );
+                                X13DockerLogin( credsId: "dockerhub" );
                                 CallCakeOnWindows( "--target=docker_push_linux" );
                             }
                         }
@@ -141,7 +141,7 @@ pipeline
                         {
                             steps
                             {
-                                X13DockerLogin( "dockerhub" );
+                                X13DockerLogin( credsId: "dockerhub" );
                                 CallCakeOnUnix( "--target=docker_push_linux_arm" );
                             }
                         }
@@ -166,7 +166,7 @@ pipeline
                         {
                             steps
                             {
-                                X13DockerLogin( "dockerhub" );
+                                X13DockerLogin( credsId: "dockerhub" );
                                 CallCakeOnUnix( "--target=docker_push_manifest" );
                             }
                         }
