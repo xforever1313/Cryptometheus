@@ -295,7 +295,7 @@ class DockerLogin : IDisposable
         string userName = this.context.EnvironmentVariable<string>( this.config.UsernameEnvVar, string.Empty );
         string password = this.context.EnvironmentVariable<string>( this.config.PasswordEnvVar, string.Empty );
 
-        string arguments = $"login --username {userName} --passwordstdin";
+        string arguments = $"login --username {userName} --password-stdin";
         System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo
         {
             Arguments = arguments,
