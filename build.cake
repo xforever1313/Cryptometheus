@@ -255,7 +255,7 @@ class DockerLogin : IDisposable
 
     private readonly ICakeContext context;
     private readonly DockerLoginConfig config;
-    private readonly FilePath newDockerConfigPath;
+    private readonly DirectoryPath newDockerConfigPath;
     private string oldDockerConfigPath;
 
     // ---------------- Constructor ----------------
@@ -272,7 +272,7 @@ class DockerLogin : IDisposable
 
         if( string.IsNullOrWhiteSpace( this.config.NewDockerConfigPath ) == false )
         {
-            this.newDockerConfigPath = new FilePath( this.config.NewDockerConfigPath );
+            this.newDockerConfigPath = new DirectoryPath( this.config.NewDockerConfigPath );
         }
     }
 
@@ -282,8 +282,11 @@ class DockerLogin : IDisposable
     {
         if( this.newDockerConfigPath != null )
         {
+            this.context.Information( $"Setting {dockerConfigVar} to {this.newDockerConfigPath}" );
             this.oldDockerConfigPath = this.context.EnvironmentVariable<string>( dockerConfigVar, string.Empty );
             System.Environment.SetEnvironmentVariable( dockerConfigVar, this.newDockerConfigPath.ToString() );
+            this.context.EnsureDirectoryExists( this.newDockerConfigPath );
+            this.context.CleanDirectory( this.newDockerConfigPath );
         }
 
         if( this.config.ShouldLogin() == false )
@@ -330,11 +333,17 @@ class DockerLogin : IDisposable
         if( this.oldDockerConfigPath != null )
         {
             System.Environment.SetEnvironmentVariable( dockerConfigVar, this.oldDockerConfigPath.ToString() );
+            this.context.Information( $"Setting {dockerConfigVar} to {this.oldDockerConfigPath}" );
         }
 
-        if( this.newDockerConfigPath != null && this.context.FileExists( this.newDockerConfigPath ) )
+        if( this.newDockerConfigPath != null && this.context.DirectoryExists( this.newDockerConfigPath ) )
         {
-            this.context.DeleteFile( this.newDockerConfigPath );
+            DeleteDirectorySettings settings = new DeleteDirectorySettings
+            {
+                Force = true,
+                Recursive = true
+            };
+            this.context.DeleteDirectory( this.newDockerConfigPath, settings );
         }
     }
 }

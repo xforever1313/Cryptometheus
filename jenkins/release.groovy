@@ -23,7 +23,7 @@ def DoDockerPush( String cakeTarget )
         )]
     )
     {
-        String newConfigPath = pwd() + "/docker.config";
+        String newConfigPath = pwd() + "/docker_config";
         CallCake(
             "--target=${cakeTarget} --username_env_var=X13_DOCKER_LOGIN_USERNAME --password_env_var=X13_DOCKER_LOGIN_PASSWORD --new_docker_config_path=\"${newConfigPath}\""
         );
