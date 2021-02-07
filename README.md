@@ -4,7 +4,7 @@ Cryptometheus is a dotnet-core-powered [Prometheus](https://prometheus.io/) expo
 
 ## Downloads
 
-Soon!
+[![Docker (Linux AMD64 and ARM)](https://img.shields.io/docker/v/xforever1313/cryptometheus?label=Windows&style=flat-square)](https://hub.docker.com/repository/docker/xforever1313/cryptometheus)
 
 ## Configuration
 
