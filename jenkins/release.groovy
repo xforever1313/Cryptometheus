@@ -40,6 +40,36 @@ pipeline
     }
     stages
     {
+        stage( 'setup' )
+        {
+            stages
+            {
+                stage( 'windows' )
+                {
+                    agent
+                    {
+                        label "windows";
+                    }
+                    steps
+                    {
+                        bat "dotnet tool update Cake.Tool --version 0.37.0 --tool-path .\\Cake"
+                        bat 'C:\\"Program Files"\\Docker\\Docker\\DockerCli.exe -Version';
+                        bat 'C:\\"Program Files"\\Docker\\Docker\\DockerCli.exe -SwitchLinuxEngine';
+                    }
+                }
+                stage( 'linux_arm' )
+                {
+                    agent
+                    {
+                        label "linux && arm32";
+                    }
+                    steps
+                    {
+                        sh "~/.dotnet/dotnet tool update Cake.Tool --version 0.37.0 --tool-path ./Cake";
+                    }
+                }
+            }
+        }
         stage( 'build' )
         {
             stages
@@ -52,15 +82,6 @@ pipeline
                     }
                     stages
                     {
-                        stage( 'setup' )
-                        {
-                            steps
-                            {
-                                bat "dotnet tool update Cake.Tool --version 0.37.0 --tool-path .\\Cake"
-                                bat 'C:\\"Program Files"\\Docker\\Docker\\DockerCli.exe -Version';
-                                bat 'C:\\"Program Files"\\Docker\\Docker\\DockerCli.exe -SwitchLinuxEngine';
-                            }
-                        }
                         stage( 'build_debug' )
                         {
                             steps
