@@ -2,6 +2,11 @@
 
 Cryptometheus is a dotnet-core-powered [Prometheus](https://prometheus.io/) exporter for Crypto Currencies.  Crypto prices come from the [Cryptonator](https://www.cryptonator.com/) [API](https://www.cryptonator.com/api).
 
+## Archived
+
+Cryptometheus is no longer developed.  Cryptonator, the API we are using, is now hidden behind CloudFlaire anti-DDOS, which means requests are blocked.
+Feel free to fork if you want!
+
 ## Downloads
 
 [![Docker (Linux AMD64 and ARM)](https://img.shields.io/docker/v/xforever1313/cryptometheus?label=Docker&style=flat-square)](https://hub.docker.com/repository/docker/xforever1313/cryptometheus)
